@@ -1,0 +1,157 @@
+################################################################################
+# This file contains project global configuration for building and installation
+# process.
+#
+# Don't include this file to the Makefiles directly unless you need only project
+# specific configuration data (like in the QT project files) and include
+# Makefile.rules instead
+################################################################################
+
+E_RELEASE= @enable_release@
+
+# We need to add one level of indirect definition because of qmake which
+# uses QMAKE_{CC,CXX,LINK} to define compiler specific stuff, however 
+# if we do QMAKE_CC = $(CC) then we will get CC =$(CC) in the result makefile
+# which is bad therefore all variables which appears in qmake project file
+# must have prefix CONFIG_
+CONFIG_CC = @CC@
+CONFIG_CXX = @CXX@
+CONFIG_LINK = $(CONFIG_CXX)
+CC = $(CONFIG_CC)
+CXX = $(CONFIG_CXX)
+LINK = $(CONFIG_LINK)
+CONFIG_AR = @AR@
+AR       = $(CONFIG_AR)
+CONFIG_RANLIB = @RANLIB@
+RANLIB = $(CONFIG_RANLIB)
+CONFIG_COPY     = @COPY@
+COPY	 = $(CONFIG_COPY)
+CONFIG_COPY_FILE = $(COPY)
+COPY_FILE= $(CONFIG_COPY_FILE)
+CONFIG_COPY_DIR = $(COPY) -r
+COPY_DIR = $(CONFIG_COPY_DIR)
+CONFIG_INSTALL_FILE = $(COPY_FILE)
+INSTALL_FILE= $(CONFIG_INSTALL_FILE)
+CONFIG_INSTALL_DIR = $(COPY_DIR)
+INSTALL_DIR = $(CONFIG_INSTALL_DIR)
+CONFIG_DEL_FILE= @DEL_FILE@
+DEL_FILE = $(CONFIG_DEL_FILE)
+CONFIG_SYMLINK = @SYMLINK@
+SYMLINK  = $(CONFIG_SYMLINK)
+CONFIG_DEL_DIR = @DEL_DIR@
+DEL_DIR  = $(CONFIG_DEL_DIR)
+CONFIG_DEL_FORCE_DIR = @DEL_FORCE_DIR@
+DEL_FORCE_DIR = $(CONFIG_DEL_FORCE_DIR)
+CONFIG_MOVE = @MOVE@
+MOVE     = $(MOVE)
+CONFIG_CHK_DIR_EXISTS = @CHK_DIR_EXISTS@
+CHK_DIR_EXISTS = $(CONFIG_CHK_DIR_EXISTS)
+CONFIG_MKDIR = @MKDIR@
+MKDIR    = $(CONFIG_MKDIR)
+SHELL = @SHELL@
+LIBPREFIX = @LIBPREFIX@
+
+###########################################
+# Installation directories
+###########################################
+
+# Installation root directory (empty for / otherwise including trailing slash)
+INSTALL_ROOT	= @root_dir@
+
+# extracts values from configure used by others - don't use them directly
+# and _always_ use uppercase variants instead!
+#
+# TODO version must be distinguished between dev and normal package
+version		= @PACKAGE_VERSION@
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
+package_name	= $(PACKAGE_TARNAME)
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+datarootdir	= @datarootdir@
+bindir		= @bindir@
+docdir		= @docdir@
+datadir		= @datadir@/$(package_name)
+
+
+#############################################
+# Flags definition
+#############################################
+
+# Debug options
+DEBUG	 = @DEBUG@
+# Optimization options
+OPTIM	 = @OPTIM@
+# Architecture specific options
+ARCH	 = @ARCH@
+# Warning options
+WARN	 = @WARN@ 
+C_EXTRA	 = @C_EXTRA@ 
+CXX_EXTRA = @CXX_EXTRA@ 
+
+# same like for compiler stuff we also define 2 levels 
+# CONFIG_{NAME} can be used for qmake direct {NAME} can be used
+# for compilation
+CONFIG_CFLAGS  	= $(DEBUG) $(OPTIM) $(ARCH) $(WARN) $(C_EXTRA) @STACK_PROTECTOR_FLAGS@ -pipe @C_PORTABILITY_FLAGS@
+CONFIG_CXXFLAGS	= @CPPFLAGS@ $(DEBUG) $(OPTIM) $(ARCH) $(WARN) $(CXX_EXTRA) @STACK_PROTECTOR_FLAGS@ -pipe @CXX_PORTABILITY_FLAGS@
+
+CFLAGS = $(CONFIG_CFLAGS)
+CXXFLAGS = $(CONFIG_CXXFLAGS)
+
+#######################################
+# Absolute paths for all components
+####################################### 
+
+ROOT		= @abs_builddir@
+SRCROOT		= $(ROOT)/src
+XPDFROOT 	= $(SRCROOT)/xpdf
+TOOLSROOT	= $(SRCROOT)/tools
+UNILIBROOT  = $(SRCROOT)/unilib
+FORMATROOT  = $(SRCROOT)/format
+IODOCSROOT	= $(SRCROOT)/io-document
+MAZUTILSSROOT = $(SRCROOT)/maz-utils
+UTILSROOT	= $(SRCROOT)/utils
+OSROOT		= $(SRCROOT)/os
+ADDITIONAL_INCLUDES = @ADDITIONAL_INCLUDES@
+
+FREETYPEFLAGS	 = @FT2_CFLAGS@
+T1FLAGS		 = @t1_CFLAGS@
+
+MANDATORY_INCPATH = -I$(SRCROOT) \
+            -I$(UNILIBROOT) \
+            -I$(FORMATROOT) \
+            -I$(IODOCSROOT) -I$(MAZUTILSSROOT) \
+            -I$(XPDFROOT) \
+            -I$(ADDITIONAL_INCLUDES) \
+            $(FREETYPEFLAGS) \
+            $(T1FLAGS) 
+
+FREETYPE_LIBS = ${IN_FT2_LIBS}
+ifeq (${IN_FT2_LIBS},)
+FREETYPE_LIBS := @FT2_LIBS@
+endif
+
+T1_LIBS		 = @t1_LIBS@
+ZLIB_LIBS	 = @ZLIB_LIBS@
+
+
+# given from configure parameters
+STANDARD_LIBS	 = @LIBS@
+STANDARD_LDFLAGS = @LDFLAGS@
+
+# all necessary libraries
+MANDATORY_LIBS	 = \
+            -Wl,-Bstatic \
+            $(STANDARD_LIBS) \
+    	    -lio-document -L$(IODOCSROOT) \
+            -lmaz-utils -L$(MAZUTILSSROOT) \
+            -lunilib -L$(UNILIBROOT) \
+            -lformat -L$(FORMATROOT) \
+    	    -lxpdf -L$(XPDFROOT)/xpdf \
+            -lfofi -L$(XPDFROOT)/fofi \
+    	    -lGoo -L$(XPDFROOT)/goo \
+            -lsplash -L$(XPDFROOT)/splash \
+            $(FREETYPE_LIBS) \
+            $(T1_LIBS) \
+            $(ZLIB_LIBS) \
+            -Wl,-Bdynamic
+

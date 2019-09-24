@@ -1,0 +1,131 @@
+/*
+ * aconf.h
+ *
+ * Copyright 2002-2003 Glyph & Cog, LLC
+ */
+
+#ifndef ACONF_H
+#define ACONF_H
+
+#include <aconf2.h>
+
+/*
+ * Use A4 paper size instead of Letter for PostScript output.
+ */
+/* #undef A4_PAPER */
+
+/*
+ * Do not allow text selection.
+ */
+/* #undef NO_TEXT_SELECT */
+
+/*
+ * Include support for OPI comments.
+ */
+/* #undef OPI_SUPPORT */
+
+/*
+ * Enable multithreading support.
+ */
+/* #undef MULTITHREADED */
+
+/*
+ * Enable C++ exceptions.
+ */
+/* #undef USE_EXCEPTIONS */
+
+/*
+ * Enable word list support.
+ */
+#define TEXTOUT_WORD_LIST
+
+/*
+ * Use fixed point (instead of floating point) arithmetic.
+ */
+/* #undef USE_FIXEDPOINT */
+
+/*
+ * Directory with the Xpdf app-defaults file.
+ */
+/* #undef APPDEFDIR */
+
+/*
+ * Full path for the system-wide xpdfrc file.
+ */
+/* #undef SYSTEM_XPDFRC */
+
+/*
+ * Various include files and functions.
+ */
+#cmakedefine01 HAVE_DIRENT_H
+/* #undef HAVE_SYS_NDIR_H */
+/* #undef HAVE_SYS_DIR_H */
+/* #undef HAVE_NDIR_H */
+/* #undef HAVE_SYS_SELECT_H */
+/* #undef HAVE_SYS_BSDTYPES_H */
+#undef HAVE_STRINGS_H
+#undef HAVE_BSTRING_H
+#cmakedefine HAVE_POPEN
+#cmakedefine01 HAVE_MKSTEMP
+#cmakedefine01 HAVE_MKSTEMPS
+/* #undef SELECT_TAKES_INT */
+#cmakedefine01 HAVE_FSEEKO
+#cmakedefine01 HAVE_FSEEK64
+#define _FILE_OFFSET_BITS 64
+#define _LARGE_FILES 1
+#define _LARGEFILE_SOURCE 1
+/* #undef HAVE_XTAPPSETEXITFLAG */
+
+/*
+ * This is defined if using libXpm.
+ */
+/* #undef HAVE_X11_XPM_H */
+
+/*
+ * This is defined if using t1lib.
+ */
+/* #undef HAVE_T1LIB_H */
+
+/*
+ * One of these is defined if using FreeType (version 1 or 2).
+ */
+/* #undef HAVE_FREETYPE_H */
+#define HAVE_FREETYPE_FREETYPE_H 1
+
+/*
+ * This is defined if using libpaper.
+ */
+/* #undef HAVE_PAPER_H */
+
+/*
+ * Enable support for loading plugins.
+ */
+/* #undef ENABLE_PLUGINS */
+
+/*
+ * Defined if the Splash library is avaiable.
+ */
+#define HAVE_SPLASH 1
+
+/*
+ * Enable support for CMYK output.
+ */
+/* #undef SPLASH_CMYK */
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+#if HAVE_T1LIB_H
+  #include <t1lib.h>
+  #define _T1LIB_VERSION_ "unknown"
+#endif
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
+  #include <ft2build.h>
+  #include FT_FREETYPE_H
+  #ifndef FREETYPE_PATCH
+    #define FREETYPE_PATCH ?
+  #endif
+  #define _FREETYPELIB_VERSION_ TOSTRING(FREETYPE_MAJOR) "." TOSTRING(FREETYPE_MINOR) "." TOSTRING(FREETYPE_PATCH)
+#endif
+
+#endif

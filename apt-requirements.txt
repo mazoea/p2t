@@ -1,0 +1,4 @@
+autoconf
+mlocate
+wget
+curl

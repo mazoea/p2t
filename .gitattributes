@@ -1,0 +1,4 @@
+*.sh eol=lf
+*.py eol=lf
+*.md eol=lf
+apt-requirements.txt eol=lf

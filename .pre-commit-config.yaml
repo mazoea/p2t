@@ -1,0 +1,14 @@
+repos:
+-   repo: git://github.com/pre-commit/mirrors-autopep8
+    rev: v1.3.5
+    hooks:
+    -   id: autopep8
+-   repo: git://github.com/doublify/pre-commit-clang-format
+    rev: fc229b7b3248622cdd1e3bd24664d19ae655c2cc
+    hooks:
+    # for windows remove /c//Users//jm//AppData//Roaming//npm//clang-format and keep only *.cmd there!
+    -   id: clang-format
+        args:
+        - -i
+        - --fallback-style=none
+        - --style=file

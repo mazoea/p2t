@@ -1,0 +1,46 @@
+cppcheck:
+  image: registry.gitlab.com/mazoea-team/docker-cppcheck:v1.84
+  mount: ./src
+  template: "EHM {file} {line},{severity},{id},{message}"
+  include:
+    - ./
+    - ./io-document/json 
+    - ./io-document
+    - ./os 
+  ignore:
+    - "io-document/json"
+  suppress:
+    - "*:*io-document/json/json.hpp"
+    - "*:*format/*"
+    - "*:*xpdf/*"
+    - "*:*unilib/uninorm*"
+    - "*:*unilib/utf*"
+    - constStatement
+    - variableScope
+    - passedByValue
+  max_errors: 100
+  escape: true
+
+# BEWARE cloc exclude dir does *not* work!
+cloc:
+  image: registry.gitlab.com/mazoea-team/docker-cloc
+  mount: ./src
+  params: --follow-links --quiet
+
+smoketests:
+  bin: ./image_to_text
+  cwd: ./bin
+  0:
+    - ""
+    - "--help"
+  1:
+    - "--unknown"
+
+valgrind:
+  image: registry.gitlab.com/mazoea-team/docker-valgrind:v1.1
+  mount:
+    - ./:/opt/bits
+    - ./bin-nix/:/opt/binaries
+  input: ./__process/valgrind/
+  input_suff: "*.pdf"
+  params: -q --undef-value-errors=no --tool=memcheck --leak-check=full ./pdf_to_text --type=json --out= --file=
